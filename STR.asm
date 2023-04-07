@@ -1,0 +1,108 @@
+;接受字符串，显示其中数字字符的个数、英文字母的个数和字符串长度
+DATA SEGMENT
+MLENGTH = 128
+BUFF DB MLENGTH
+     DB ?
+     DB MLENGTH DUP(0)
+MESS0 DB 'Enter a string: ','$'
+MESS1 DB 'Length: ','$'
+MESS2 DB 'Number of digits: ','$'
+MESS3 DB 'Number of characters: ','$'
+DATA ENDS
+CODE SEGMENT
+    ASSUME CS:CODE,DS:DATA
+START:
+    MOV AX,DATA
+    MOV DS,AX
+    MOV DX,OFFSET MESS0
+    CALL DISPMESS
+    MOV DX,OFFSET BUFF
+    MOV AH,0AH
+    INT 21H
+    CALL NEWLINE
+    XOR BX,BX
+    MOV CL,BUFF+1
+    MOV CH,0
+    JCXZ COK
+    MOV SI,OFFSET BUFF+2
+AGAIN: MOV AL,[SI]
+        INC SI
+        CMP AL,'0'
+        JB NEXT
+        CMP AL,'9'
+        JA NODEC
+        INC BH
+        JMP SHORT NEXT
+NODEC: OR AL,20H
+    CMP AL,'a'
+    JB NEXT
+    CMP AL,'z'
+    JA NEXT
+    INC BL
+NEXT:
+    LOOP AGAIN
+COK: MOV DX,OFFSET MESS1
+    CALL DISPMESS
+    MOV AL,BUFF+1
+    XOR AH,AH
+    CALL DISPAL
+    CALL NEWLINE
+
+    MOV DX,OFFSET MESS2
+    CALL DISPMESS
+    MOV AL,BH
+    XOR AH,AH
+    CALL DISPAL
+    CALL NEWLINE
+
+    MOV DX,OFFSET MESS3
+    CALL DISPMESS
+    MOV AL,BL
+    XOR AH,AH
+    CALL DISPAL
+    CALL NEWLINE
+
+    MOV AH,4CH
+    INT 21H
+DISPAL PROC
+    MOV CX,3
+    MOV DL,10
+DISP1: DIV DL
+    XCHG AH,AL
+    ADD AL,'0'
+    PUSH AX
+    XCHG AH,AL
+    MOV AH,0
+    LOOP DISP1
+    MOV CX,3
+DISP2:
+    POP DX
+    CALL ECHOCH
+    LOOP DISP2
+    RET
+DISPAL ENDP
+ECHOCH PROC
+    MOV AH,02H
+    INT 21H
+    RET
+ECHOCH ENDP
+DISPMESS PROC;输出字符串
+    MOV AH,9
+    INT 21H
+    RET 
+DISPMESS ENDP
+NEWLINE PROC;输出回车换行
+    PUSH AX
+    PUSH DX
+    MOV DL,0DH;输出回车符
+    MOV AH,2
+    INT 21H
+    MOV DL,0AH;输出换行符
+    MOV AH,2
+    INT 21H
+    POP DX
+    POP AX
+    RET
+NEWLINE ENDP
+CODE ENDS
+END START

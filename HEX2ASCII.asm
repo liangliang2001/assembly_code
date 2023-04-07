@@ -1,0 +1,28 @@
+;十六进制数到ASCII码的转换
+;Y=X+30H，0<=X<=9，X=0时，Y=30H，X=1时，Y=31H，依次类推
+;Y=X+37H,A<=X<=Z,X=A时，Y=41H，X=B时，Y=42H，依次类推
+DATA SEGMENT
+XX DB 4
+ASCII DB ?
+DATA ENDS
+CODE SEGMENT
+    ASSUME CS:CODE,DS:DATA
+START: MOV AX,DATA
+    MOV DS,AX
+    MOV AL,XX
+    AND AL,0FH
+    CMP AL,9        ;(1)
+    JA LAB1         ;(2)
+    ADD AL,30H      ;(3)
+    JMP LAB2        ;(4)
+LAB1: ADD AL,37H    ;(5)
+LAB2: MOV ASCII,AL  ;(6)
+    MOV AH,4CH
+    INT 21H
+CODE ENDS
+END START
+;ADD AL,30H
+;CMP AL,39H
+;JBE LAB2
+;ADD AL,7
+;LAB2:

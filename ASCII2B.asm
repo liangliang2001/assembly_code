@@ -1,0 +1,34 @@
+CODE SEGMENT
+    ASSUME CS:CODE,DS:CODE
+START:
+    MOV AH,1
+    INT 21H
+    CALL NEWLINE
+    MOV BL,AL
+    MOV CX,8
+NEXT: SHL BL,1
+    MOV DL,30H
+    ADC DL,0
+    MOV AH,2
+    INT 21H
+    LOOP NEXT
+    MOV DL,'B'
+    MOV AH,2
+    INT 21H
+    MOV AH,4CH
+    INT 21H
+NEWLINE PROC;输出回车换行
+    PUSH AX
+    PUSH DX
+    MOV DL,0DH;输出回车符
+    MOV AH,2
+    INT 21H
+    MOV DL,0AH;输出换行符
+    MOV AH,2
+    INT 21H
+    POP DX
+    POP AX
+    RET
+NEWLINE ENDP
+CODE ENDS
+END START

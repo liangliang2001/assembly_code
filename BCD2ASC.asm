@@ -1,0 +1,28 @@
+;压缩BCD码转换成ASCII码
+DATA SEGMENT
+    BCD DB 86H
+    ASCII DB 2 DUP(0)
+DATA ENDS
+CODE SEGMENT
+    ASSUME CS:CODE,DS:DATA
+START: MOV AX,DATA
+    MOV DS,AX
+
+    MOV AL,BCD;把存放在低4位的BCD码转换为对应十进制的数字的ASCII码
+    AND AL,0FH
+    ADD AL,30H
+    MOV ASCII+1,AL
+    
+    MOV AH,2
+    MOV DL,[ASCII+1]
+    INT 21H
+
+    MOV AL,BCD;把存放在高4位的BCD码转换为对应十进制的数字的ASCII码
+    MOV CL,4
+    SHR AL,CL
+    ADD AL,30H
+    MOV ASCII,AL
+    MOV AH,4CH
+    INT 21H
+CODE ENDS
+    END START
